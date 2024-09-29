@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog Image Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More modern font */
+            text-align: center; 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #e6f7ff; /* Light cyan background */
+            color: #333; /* Dark text color */
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            margin-bottom: 20px;
+            border-radius: 5px; 
+            border: 1px solid #007bff; /* Border color */
+            background-color: #ffffff; /* White background for input */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px; 
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s; /* Smooth transition for hover */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        img {
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px; 
+        }
+
+        #loading {
+            display: none;
+            margin-top: 20px;
+            font-weight: bold; /* Bold loading text */
+            color: #007bff; /* Loading text color */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Dog Image Generator</h1>
+    <input type="text" id="textInput" placeholder="Say 'dog image' to generate a dog image">
+    <br>
+    <button onclick="generateDogImage()">Generate Dog Image</button>
+
+    <div id="loading">Loading...</div>
+    <div id="imageContainer"></div>
+
+    <script>
+        async function generateDogImage() {
+            const textInput = document.getElementById('textInput');
+            const text = textInput.value.trim().toLowerCase();
+            const loadingIndicator = document.getElementById('loading');
+            const imageContainer = document.getElementById('imageContainer');
+
+            // Check if the input is "dog image"
+            if (text !== 'dog image') {
+                alert("Please type 'dog image' to generate a dog image.");
+                return;
+            }
+
+            loadingIndicator.style.display = 'block'; // Show loading indicator
+            imageContainer.innerHTML = ''; // Clear previous image
+
+            try {
+                // Fetch a random dog image from the Dog CEO's Dog API
+                const response = await fetch('https://dog.ceo/api/breeds/image/random');
+                const data = await response.json();
+
+                if (response.ok) {
+                    const imageUrl = data.message; // Get the image URL from the API response
+
+                    // Display the generated dog image
+                    imageContainer.innerHTML = `<img src="${imageUrl}" alt="Generated Dog Image">`;
+                } else {
+                    console.error('Error details:', data);
+                    alert("Error generating image: " + (data.message || 'Unknown error occurred.'));
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                alert("A network error occurred: " + error.message);
+            } finally {
+                loadingIndicator.style.display = 'none'; // Hide loading indicator
+                textInput.value = ''; // Clear the input field
+            }
+        }
+    </script>
+
+</body>
+</html>
